@@ -1,0 +1,40 @@
+version: '3'
+
+volumes:
+  certs:
+    external: true
+
+services:
+  proxy:
+    image: jwilder/nginx-proxy:alpine
+    container_name: proxy-nginx
+    ports:
+      - 80:80
+      - 443:443
+    restart: always
+    tty: false
+    privileged: true
+    volumes:
+      - certs:/etc/nginx/certs:ro
+      - ./setting/proxy/nginx.conf:/etc/nginx/nginx.conf
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+      - /etc/nginx/vhost.d
+      - /usr/share/nginx/html
+    networks:
+      - front
+
+  letsencrypt:
+    image: jrcs/letsencrypt-nginx-proxy-companion
+    container_name: proxy-letsencrypt
+    restart: always
+    tty: false
+    privileged: true
+    volumes:
+      - certs:/etc/nginx/certs:rw
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - front
+
+networks:
+  front:
+    external: true
