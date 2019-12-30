@@ -1,7 +1,7 @@
 version: '2'
 services:
   proxy:
-    image: jwilder/nginx-proxy:alpine
+    build: docker/nginx-proxy
     container_name: proxy-nginx
     ports:
       - 80:80
